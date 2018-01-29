@@ -10,7 +10,7 @@ IP Ranges file. However due to frequent updates above download page recommends y
 
 During local development API is exposed from url:
 
-`http://localhost:7071//api/IpCheck`
+`http://localhost:7071/api/IpCheck`
 
 You can pass on `?ip=<ip>` to then check if the given `<ip>` is one of the
 Azure Datacenter IPs. Example:
