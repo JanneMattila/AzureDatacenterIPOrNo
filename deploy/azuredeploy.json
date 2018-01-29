@@ -1,0 +1,117 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storageType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Standard_LRS",
+        "Standard_ZRS",
+        "Standard_GRS",
+        "Standard_RAGRS",
+        "Premium_LRS"
+      ]
+    }
+  },
+  "variables": {
+    "ipCheckAppPlanName": "ipCheckAppPlan",
+    "ipCheckAppName": "[concat('ipc', uniqueString(resourceGroup().id))]",
+    "ipCheckStorageName": "[concat('ipcs', uniqueString(resourceGroup().id))]",
+    "ipCheckAppInsightsName": "ipCheckAppInsights"
+  },
+  "resources": [
+    {
+      "name": "[variables('ipCheckStorageName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-01-01",
+      "sku": {
+        "name": "[parameters('storageType')]"
+      },
+      "dependsOn": [],
+      "tags": {},
+      "kind": "Storage"
+    },
+    {
+      "name": "[variables('ipCheckAppInsightsName')]",
+      "type": "Microsoft.Insights/components",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2014-04-01",
+      "kind": "other",
+      "dependsOn": [],
+      "tags": {},
+      "properties": {
+        "applicationId": "[resourceId('Microsoft.Web/sites', variables('ipCheckAppName'))]"
+      }
+    },
+    {
+      "name": "[variables('ipCheckAppPlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-04-01",
+      "dependsOn": [],
+      "tags": {},
+      "properties": {
+        "computeMode": "Dynamic",
+        "sku": "Dynamic"
+      }
+    },
+    {
+      "name": "[variables('ipCheckAppName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "kind": "functionapp",
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', variables('ipCheckAppPlanName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', variables('ipCheckStorageName'))]"
+      ],
+      "tags": {
+        "[concat('hidden-related:', resourceGroup().id, '/providers/Microsoft.Web/serverfarms/', variables('ipCheckAppPlanName'))]": "Resource"
+      },
+      "properties": {
+        "name": "[variables('ipCheckAppName')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', variables('ipCheckAppPlanName'))]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsDashboard",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('ipCheckStorageName'), ';AccountKey=', listKeys(variables('ipCheckStorageName'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('ipCheckStorageName'), ';AccountKey=', listKeys(variables('ipCheckStorageName'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('ipCheckAppInsightsName')), '2014-04-01').InstrumentationKey]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('ipCheckStorageName'), ';AccountKey=', listKeys(variables('ipCheckStorageName'),'2015-05-01-preview').key1)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTSHARE",
+              "value": "[toLower(variables('ipCheckAppName'))]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "beta"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "webAppName": {
+      "type": "string",
+      "value": "[variables('ipCheckAppName')]"
+    },
+    "webAppUri": {
+      "type": "string",
+      "value": "[concat('http://',reference(resourceId('Microsoft.Web/sites', variables('ipCheckAppName'))).hostNames[0])]"
+    }
+  }
+}
