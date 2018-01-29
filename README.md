@@ -42,7 +42,7 @@ If IP is not part of any of the defined Azure Region IP Range then you get follo
 }
 ```
 
-If IP cannot be be parsed of there is some other error then you get following response:
+If IP cannot be be parsed of there is some other error then you get following response (with `400 BadRequest` as HTTP Status):
 ```json
 {
     "error": "IPAddress Validation failed."
