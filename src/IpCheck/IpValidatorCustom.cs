@@ -1,17 +1,31 @@
 ﻿using IpCheck.Models;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace IpCheck
 {
-    public class IpValidator : IIpValidator
+    public class IpValidatorCustom : IIpValidator
     {
-        private static Lazy<AzurePublicIpAddresses> ipAddressLoader = new Lazy<AzurePublicIpAddresses>(() =>
+        public struct IpMap
         {
+            public IPNetwork IPNetwork;
+            public string Subnet;
+            public string Region;
+
+        }
+
+        private static ReadOnlySpan<IpMap> _ipMap;
+
+        public IpValidatorCustom()
+        {
+            var ipMapList = new List<IpMap>();
             // From: https://www.microsoft.com/en-us/download/details.aspx?id=41653
             var assembly = Assembly.GetExecutingAssembly();
             var resourceStream = assembly.GetManifestResourceStream("IpCheck.PublicIPs.xml");
@@ -24,13 +38,18 @@ namespace IpCheck
                 {
                     foreach (var ipRange in region.IpRange)
                     {
-                        var ipNetwork = ipRange.IPNetwork;
+                        ipMapList.Add(new IpMap
+                        {
+                            IPNetwork = ipRange.IPNetwork,
+                            Region = region.Name,
+                            Subnet = ipRange.Subnet
+                        });
                     }
                 }
 
-                return ipAddresses;
+                _ipMap = new ReadOnlySpan<IpMap>(ipMapList.ToArray());
             }
-        });
+        }
 
         public bool TryParse(string ip, out IpValidationResult result)
         {
@@ -44,23 +63,20 @@ namespace IpCheck
             }
             try
             {
-                AzurePublicIpAddresses ipAddresses = ipAddressLoader.Value;
                 result = null;
 
-                foreach (var region in ipAddresses.Region)
+                for(int i = 0; i < _ipMap.Length; i++)
                 {
-                    foreach (var ipRange in region.IpRange)
+                    var ipRange = _ipMap[i];
+                    if (IPNetwork.Contains(ipRange.IPNetwork, ipAddress))
                     {
-                        if (IPNetwork.Contains(ipRange.IPNetwork, ipAddress))
+                        result = new IpValidationResult
                         {
-                            result = new IpValidationResult
-                            {
-                                Region = region.Name,
-                                IpRange = ipRange.Subnet,
-                                Ip = ipAddress.ToString()
-                            };
-                            return true;
-                        }
+                            Region = ipRange.Region,
+                            IpRange = ipRange.Subnet,
+                            Ip = ipAddress.ToString()
+                        };
+                        return true;
                     }
                 }
 

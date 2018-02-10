@@ -4,6 +4,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="PublicIPs.xml" />
   </ItemGroup>
@@ -17,6 +21,7 @@
   <ItemGroup>
     <PackageReference Include="IPNetwork2" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.Memory" Version="4.4.0-preview1-25305-02" />
   </ItemGroup>
 
 </Project>

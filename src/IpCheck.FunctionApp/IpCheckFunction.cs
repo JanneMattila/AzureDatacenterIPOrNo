@@ -8,7 +8,7 @@ namespace IpCheck.FunctionApp
 {
     public static class IpCheckFunction
     {
-        private static IpValidator _validator = new IpValidator();
+        private static IIpValidator _validator = new IpValidator();
 
         [FunctionName("IpCheck")]
         public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, TraceWriter log)
