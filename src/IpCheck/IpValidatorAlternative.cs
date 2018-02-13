@@ -1,32 +1,21 @@
 ﻿using IpCheck.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
 namespace IpCheck
 {
-    public class IpValidatorCustom : IIpValidator
+    public class IpValidatorAlternative : IIpValidator
     {
-        public struct IpMap
+        private List<IpMap> _ipMapList;
+
+        public void Initialize()
         {
-            public IPNetwork IPNetwork;
-            public string Subnet;
-            public string Region;
-
-        }
-
-        private static ReadOnlySpan<IpMap> _ipMap;
-
-        public IpValidatorCustom()
-        {
-            var ipMapList = new List<IpMap>();
             // From: https://www.microsoft.com/en-us/download/details.aspx?id=41653
+            var ipMapList = new List<IpMap>();
             var assembly = Assembly.GetExecutingAssembly();
             var resourceStream = assembly.GetManifestResourceStream("IpCheck.PublicIPs.xml");
 
@@ -47,7 +36,7 @@ namespace IpCheck
                     }
                 }
 
-                _ipMap = new ReadOnlySpan<IpMap>(ipMapList.ToArray());
+                _ipMapList = ipMapList;
             }
         }
 
@@ -65,9 +54,8 @@ namespace IpCheck
             {
                 result = null;
 
-                for(int i = 0; i < _ipMap.Length; i++)
+                foreach (var ipRange in _ipMapList)
                 {
-                    var ipRange = _ipMap[i];
                     if (IPNetwork.Contains(ipRange.IPNetwork, ipAddress))
                     {
                         result = new IpValidationResult

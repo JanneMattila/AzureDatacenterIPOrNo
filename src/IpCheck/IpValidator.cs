@@ -1,6 +1,5 @@
 ﻿using IpCheck.Models;
 using System;
-using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Xml;
@@ -24,13 +23,24 @@ namespace IpCheck
                 {
                     foreach (var ipRange in region.IpRange)
                     {
+#pragma warning disable S1481
+                        // Unused local variable due to forced initialization.
                         var ipNetwork = ipRange.IPNetwork;
+#pragma warning restore S1481
                     }
                 }
 
                 return ipAddresses;
             }
         });
+
+        public void Initialize()
+        {
+#pragma warning disable S1481
+            // Unused local variable due to forced initialization.
+            AzurePublicIpAddresses ipAddresses = ipAddressLoader.Value;
+#pragma warning restore S1481
+        }
 
         public bool TryParse(string ip, out IpValidationResult result)
         {
