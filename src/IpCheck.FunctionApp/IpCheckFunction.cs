@@ -8,7 +8,18 @@ namespace IpCheck.FunctionApp
 {
     public static class IpCheckFunction
     {
-        private static IpValidator _validator = new IpValidator();
+        private static IIpValidator _validator = new IpValidatorAlternative();
+
+        static IpCheckFunction()
+        {
+            _validator.Initialize();
+        }
+
+        [FunctionName("Ping")]
+        public static IActionResult Ping([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, TraceWriter log)
+        {
+            return new OkResult();
+        }
 
         [FunctionName("IpCheck")]
         public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, TraceWriter log)
