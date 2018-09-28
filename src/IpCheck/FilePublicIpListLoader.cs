@@ -8,7 +8,7 @@ namespace IpCheck
 {
     public class FilePublicIpListLoader : IPublicIpListLoader
     {
-        public async Task<AzurePublicIpAddresses> LoadAsync()
+        public async Task<IpAddressSource> LoadAsync()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var resourceStream = assembly.GetManifestResourceStream("IpCheck.PublicIPs.xml");
@@ -28,7 +28,11 @@ namespace IpCheck
                     }
                 }
 
-                return await Task.FromResult(ipAddresses).ConfigureAwait(false);
+                return await Task.FromResult(new IpAddressSource()
+                {
+                    Source = "Static development file",
+                    Addresses = ipAddresses
+                }).ConfigureAwait(false);
             }
         }
     }
