@@ -2,36 +2,37 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace IpCheck.FunctionApp
 {
     public static class IpCheckFunction
     {
-        private static IIpValidator _validator = new IpValidatorAlternative();
+        private static IIpValidator _validator = new IpValidator(new OnlinePublicIpListLoader());
 
         static IpCheckFunction()
         {
-            _validator.Initialize();
+            _validator.LoadAsync();
         }
 
         [FunctionName("Ping")]
-        public static IActionResult Ping([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, TraceWriter log)
+        public static IActionResult Ping([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, ILogger log)
         {
             return new OkResult();
         }
 
         [FunctionName("IpCheck")]
-        public static IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, TraceWriter log)
+        public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)]HttpRequest req, ILogger log)
         {
             string ip = req.Query["ip"];
 
-            log.Info($"IpCheck processing request with ip: {ip}");
-            if (_validator.TryParse(ip, out IpValidationResult result))
+            log.LogInformation($"IpCheck processing request with ip: {ip}");
+            var result = await _validator.TryParseAsync(ip);
+            return new ObjectResult(result)
             {
-                return new OkObjectResult(result);
-            }
-            return new BadRequestObjectResult(result);
+                StatusCode = result.StatusCode
+            };
         }
     }
 }
