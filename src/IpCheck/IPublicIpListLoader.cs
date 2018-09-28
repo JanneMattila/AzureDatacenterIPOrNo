@@ -5,6 +5,6 @@ namespace IpCheck
 {
     public interface IPublicIpListLoader
     {
-        Task<AzurePublicIpAddresses> LoadAsync();
+        Task<IpAddressSource> LoadAsync();
     }
 }

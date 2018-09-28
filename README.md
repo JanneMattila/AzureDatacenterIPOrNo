@@ -22,6 +22,7 @@ Response:
     "region": "uswest",
     "ipRange": "191.239.0.0/18",
     "ip": "191.239.0.100"
+    "source": "PublicIPs_20180924"
 }
 ```
 
@@ -29,6 +30,7 @@ Response fields:
 * `"region"`: name of the [Azure Region](https://azure.microsoft.com/en-us/regions/) from which the IP is
 * `"ipRange"`: IP range from the `PublicIPs_yyyyMMdd.xml` file which contains given IP
 * `"ip"`: IP address that was checked
+* `"source"`: Source filename used in lookup
 
 If IP is not part of any of the defined Azure Region IP Range then you get following response:
 

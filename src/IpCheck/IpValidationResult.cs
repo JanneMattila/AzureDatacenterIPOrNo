@@ -13,6 +13,9 @@ namespace IpCheck
         [JsonProperty(PropertyName = "ip", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Ip { get; set; }
 
+        [JsonProperty(PropertyName = "source", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        public string Source { get; internal set; }
+
         [JsonProperty(PropertyName = "error", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Error { get; set; }
 

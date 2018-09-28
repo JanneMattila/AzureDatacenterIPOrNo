@@ -9,6 +9,7 @@ namespace IpCheck
     public class IpValidator : IIpValidator
     {
         private DateTime _lastUpdated = DateTime.MinValue;
+        private string _source;
         private AzurePublicIpAddresses _ipAddresses;
         private SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1);
 
@@ -30,7 +31,9 @@ namespace IpCheck
                     return _ipAddresses;
                 }
 
-                _ipAddresses = await _publicIpListLoader.LoadAsync().ConfigureAwait(false);
+                var list = await _publicIpListLoader.LoadAsync().ConfigureAwait(false);
+                _source = list.Source;
+                _ipAddresses = list.Addresses;
                 _lastUpdated = DateTime.UtcNow;
                 return _ipAddresses;
             }
@@ -64,7 +67,8 @@ namespace IpCheck
                                 StatusCode = 200,
                                 Region = region.Name,
                                 IpRange = ipRange.Subnet,
-                                Ip = ipAddress.ToString()
+                                Ip = ipAddress.ToString(),
+                                Source = _source
                             };
                         }
                     }
