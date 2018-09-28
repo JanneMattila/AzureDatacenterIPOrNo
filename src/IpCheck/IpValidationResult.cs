@@ -15,5 +15,8 @@ namespace IpCheck
 
         [JsonProperty(PropertyName = "error", DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         public string Error { get; set; }
-    }    
+
+        [JsonIgnore]
+        public int StatusCode { get; internal set; }
+    } 
 }

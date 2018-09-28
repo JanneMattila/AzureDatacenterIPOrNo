@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Xunit;
 
 namespace IpCheck.Tests
@@ -10,7 +11,6 @@ namespace IpCheck.Tests
         protected IpValidatorBaseTests(IIpValidator validator)
         {
             _validator = validator;
-            _validator.Initialize();
         }
 
         [Theory]
@@ -19,18 +19,19 @@ namespace IpCheck.Tests
         [InlineData(" ")]
         [InlineData("-")]
         [InlineData("a")]
-        public void InvalidInputTest(string ip)
+        public async Task InvalidInputTest(string ip)
         {
             // Arrange
-            var expectedParse = false;
+            await _validator.LoadAsync();
+            var expectedStatusCode = 400;
 
             // Act
-            var actualParse = _validator.TryParse(ip, out IpValidationResult result);
+            var actual = await _validator.TryParseAsync(ip);
 
             // Assert
-            Assert.Equal(expectedParse, actualParse);
-            Assert.NotNull(result);
-            Assert.NotNull(result.Error);
+            Assert.Equal(expectedStatusCode, actual.StatusCode);
+            Assert.NotNull(actual);
+            Assert.NotNull(actual.Error);
         }
 
         [Theory]
@@ -38,20 +39,21 @@ namespace IpCheck.Tests
         [InlineData("20.36.0.200", "uswest2", "20.36.0.0/19")]
         [InlineData("192.168.0.1", IpValidatorConstants.NonAzureIpAddress, null)]
         [InlineData("10.168.0.1", IpValidatorConstants.NonAzureIpAddress, null)]
-        public void IpCheckTest(string ip, string expectedRegion, string expectedIpRange)
+        public async Task IpCheckTest(string ip, string expectedRegion, string expectedIpRange)
         {
             // Arrange
-            var expectedParse = true;
+            await _validator.LoadAsync();
+            var expectedStatusCode = 200;
 
             // Act
-            var actualParse = _validator.TryParse(ip, out IpValidationResult result);
+            var actual = await _validator.TryParseAsync(ip);
 
             // Assert
-            Assert.Equal(expectedParse, actualParse);
-            Assert.NotNull(result);
-            Assert.Equal(expectedRegion, result.Region);
-            Assert.Equal(expectedIpRange, result.IpRange);
-            Assert.Equal(ip, result.Ip);
+            Assert.Equal(expectedStatusCode, actual.StatusCode);
+            Assert.NotNull(actual);
+            Assert.Equal(expectedRegion, actual.Region);
+            Assert.Equal(expectedIpRange, actual.IpRange);
+            Assert.Equal(ip, actual.Ip);
         }
     }
 }

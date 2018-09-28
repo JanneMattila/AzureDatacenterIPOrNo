@@ -1,30 +1,23 @@
 ﻿using BenchmarkDotNet.Attributes;
+using System.Threading.Tasks;
 
 namespace IpCheck.Performance
 {
     [Config(typeof(IpCheckBenchmarkConfig))]
     public class IpValidatorPerfTests
     {
-        private readonly IIpValidator _validatorBase = new IpValidator();
-        private readonly IIpValidator _validatorAlternative = new IpValidatorAlternative();
+        private readonly IIpValidator _validatorBase = new IpValidator(new FilePublicIpListLoader());
 
         [GlobalSetup]
-        public void Setup()
+        public async Task Setup()
         {
-            _validatorBase.Initialize();
-            _validatorAlternative.Initialize();
+            await _validatorBase.LoadAsync();
         }
 
         [Benchmark(Baseline = true)]
-        public bool Base()
+        public async Task Base()
         {
-            return _validatorBase.TryParse("13.14.15.26", out IpValidationResult result);
-        }
-
-        [Benchmark()]
-        public bool Alternative()
-        {
-            return _validatorAlternative.TryParse("13.14.15.26", out IpValidationResult result);
+            await _validatorBase.TryParseAsync("13.14.15.26");
         }
     }
 }

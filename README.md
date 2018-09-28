@@ -3,9 +3,6 @@
 Example [Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) application to demonstrate 
 API for showing if IP Address is from [Microsoft Azure Datacenter IP Ranges](https://www.microsoft.com/en-us/download/details.aspx?id=41653).
 
-*Note*: Current version of the applications has local copy of the `PublicIPs_20180124.xml` 
-IP Ranges file. However due to frequent updates above download page recommends you to download updates _every week_.
-
 ## How this app works?
 
 During local development API is exposed from url:
