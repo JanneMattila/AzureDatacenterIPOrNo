@@ -1,9 +1,44 @@
 # Azure Datacenter IP Or No
 
+This repository contains to different solutions:
+
+1. PowerShell Module with cmdlet: `Get-AzureDatacenterIPOrNo`
+2. Azure Functions project providing API for retrieving same information.
+
+## PowerShell
+
+You can install this module directly from PowerShell gallery:
+
+```powershell
+Install-Module -Name AzureDatacenterIPOrNo
+```
+
+Then you can use it for verifying the possible Azure IP address:
+
+```powershell
+# Update the Azure IP address list from internet
+> Get-AzureDatacenterIPOrNo -IP 52.138.196.70 -UpdateCache
+
+Updating cache from ...
+
+Region      Source             Ip            IpRange
+------      ------             --            -------
+europenorth PublicIPs_20200504 52.138.196.70 IpRange
+
+# Make another check but with current cached list
+> Get-AzureDatacenterIPOrNo -IP 13.107.246.10
+
+Region       Ip
+------       --
+Non-Azure IP 13.107.246.10
+```
+
+## Azure Functions app
+
 Example [Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) application to demonstrate 
 API for showing if IP Address is from [Microsoft Azure Datacenter IP Ranges](https://www.microsoft.com/en-us/download/details.aspx?id=41653).
 
-## How this app works?
+### How this app works?
 
 During local development API is exposed from url:
 
@@ -48,7 +83,7 @@ If IP cannot be be parsed of there is some other error then you get following re
 }
 ```
 
-## Repository folder structure
+### Repository folder structure
 
 Here's the brief description of the repository folder structure:
 * `deploy`: Contains deployment script and [Azure Resource Manager Template](https://docs.microsoft.com/en-us/azure/azure-resource-manager/resource-group-authoring-templates) for the application infrastructure
@@ -58,16 +93,16 @@ Here's the brief description of the repository folder structure:
   * `release`
   * `unit`
 
-## How do I deploy this myself?
+### How do I deploy this myself?
 
 Here's example PowerShell commands if you want to deploy the infrastructure yourself:
 
 ```powershell
 # Login to Azure
-Login-AzureRmAccount
+Login-AzAccount
 
 # Select correct deployment subscription
-Select-AzureRmSubscription -SubscriptionName <subsription_name>
+Select-AzSubscription -SubscriptionName <subsription_name>
 
 # Go to deploy folder
 cd .\deploy\
