@@ -1,0 +1,17 @@
+name: CD
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - shell: pwsh
+      run: |
+        cd src\AzureDatacenterIPOrNo
+        Test-ModuleManifest .\AzureDatacenterIPOrNo.psd1
+        Publish-Module -Name .\AzureDatacenterIPOrNo.psd1 -NuGetApiKey ${{ secrets.token }}
