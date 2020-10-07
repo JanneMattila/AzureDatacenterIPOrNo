@@ -1,5 +1,7 @@
 # Azure Datacenter IP Or No
 
+[![AzureDatacenterIPOrNo](https://img.shields.io/powershellgallery/v/AzureDatacenterIPOrNo.svg?style=flat-square&label=AzureDatacenterIPOrNo)](https://www.powershellgallery.com/packages/AzureDatacenterIPOrNo/)
+
 This repository contains to different solutions:
 
 1. PowerShell Module with cmdlet: `Get-AzureDatacenterIPOrNo`
