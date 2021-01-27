@@ -21,21 +21,23 @@ Then you can use it for verifying the possible Azure IP address:
 # Update the Azure IP address list from internet
 > Get-AzureDatacenterIPOrNo -IP 52.138.196.70 -UpdateCache
 
-Updating cache from ...
+Updating cache...
 
-Region      Source             Ip            IpRange
-------      ------             --            -------
-europenorth PublicIPs_20200504 52.138.196.70 IpRange
+Region      Source                      Ip            IpRange
+------      ------                      --            -------
+europenorth ServiceTags_Public_20210125 52.138.196.70 IpRange
 
 # Make another check but with current cached list
 > Get-AzureDatacenterIPOrNo -IP 13.107.246.10
 
-Region       Ip
-------       --
-Non-Azure IP 13.107.246.10
+Region              Ip
+------              --
+Not Public Azure IP 13.107.246.10
 ```
 
 ## Azure Functions app
+
+**NOTE:** This is **obsolete** example. It's not update to use current `json` based file.
 
 Example [Azure Functions](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) application to demonstrate 
 API for showing if IP Address is from [Microsoft Azure Datacenter IP Ranges](https://www.microsoft.com/en-us/download/details.aspx?id=41653).

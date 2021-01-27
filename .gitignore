@@ -9,3 +9,5 @@
 *.user
 /packages
 /**/BenchmarkDotNet.Artifacts
+src/AzureDatacenterIPOrNo/CacheSource.txt
+src/AzureDatacenterIPOrNo/PublicIPs.json
