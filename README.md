@@ -2,8 +2,9 @@
 
 [![AzureDatacenterIPOrNo](https://img.shields.io/powershellgallery/v/AzureDatacenterIPOrNo.svg?style=flat-square&label=AzureDatacenterIPOrNo)](https://www.powershellgallery.com/packages/AzureDatacenterIPOrNo/)
 
-This repository contains PowerShell Module `AzureDatacenterIPOrNo` with contains cmdlet: `Get-AzureDatacenterIPOrNo` for checking if given
-IP is Azure Datacenter address.
+This repository contains PowerShell Module `AzureDatacenterIPOrNo`.
+It contains cmdlet: `Get-AzureDatacenterIPOrNo` for checking if
+IP is from [Azure IP Ranges and Service Tags – Public Cloud](https://www.microsoft.com/en-us/download/details.aspx?id=56519) list.
 
 ## Usage
 
@@ -31,4 +32,11 @@ Ip             Region    IpRange           Source
 Region              Ip
 ------              --
 Not Public Azure IP 13.107.246.10
+
+# Check IPv6 address
+> Get-AzureDatacenterIPOrNo -IP "2603:1040:0800:0000:0000:0000:0000:0001"
+
+Region    Ip                                      IpRange            Source
+------    --                                      -------            ------
+westindia 2603:1040:0800:0000:0000:0000:0000:0001 2603:1040:800::/46 ServiceTags_Public_20210125
 ```
