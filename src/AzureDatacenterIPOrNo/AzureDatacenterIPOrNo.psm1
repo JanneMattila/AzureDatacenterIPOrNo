@@ -29,27 +29,32 @@ function Get-AzureDatacenterIPOrNo
 (
     [Parameter(Mandatory = $true, HelpMessage = "IP address to check if it's part of the know Azure Datacenter IP ranges.")] 
     [string] $IP,
-
     [Parameter(HelpMessage = "Update cache file.")] 
     [switch] $UpdateCache = $false
 ) {
     $ErrorActionPreference = "Stop"
 
-    Add-Type -Path $PSScriptRoot\System.Net.IPNetwork.dll
+    $cachePath = "$PSScriptRoot"
+    if ((Test-Path -Path $cachePath) -eq $false) {
+        $cachePath = Get-Location
+    }
+
+    Add-Type -Path $cachePath\System.Net.IPNetwork.dll
     $ipAddress = [System.Net.IPAddress]::Parse($IP)
 
-    $cacheFileName = "$PSScriptRoot\PublicIPs.json"
-    $cacheSource = "$PSScriptRoot\CacheSource.txt"
+    $cacheFileName = "$cachePath\PublicIPs.json"
+    $cacheSource = "$cachePath\CacheSource.txt"
     if ((Test-Path -Path $cacheFileName) -eq $false -or
         $UpdateCache) {
+
+        $url = "https://www.microsoft.com/en-us/download/details.aspx?id=56519"
         if ($UpdateCache) {
-            Write-Host "Updating cache..."
+            Write-Host "Updating cache from $url..."
         }
         else {
-            Write-Warning "Cache file not found. Downloading it from..."
+            Write-Warning "Cache file not found. Downloading it from $url..."
         }
     
-        $url = "https://www.microsoft.com/en-us/download/details.aspx?id=56519"
         $response = Invoke-WebRequest $url -UseBasicParsing
         $fileStartIndex = $response.Content.IndexOf("ServiceTags_Public_")
         $fileEndIndex = $response.Content.IndexOf(".json", $fileStartIndex)
@@ -66,10 +71,11 @@ function Get-AzureDatacenterIPOrNo
             $ipNetwork = [System.Net.IPNetwork]::Parse($range)
             if ($ipNetwork.Contains($ipAddress)) {
                 return new-object psobject -property @{
-                    Region  = $serviceTag.properties.region
-                    IpRange = $range
-                    Ip      = $IP
-                    Source  = $source
+                    Region        = $serviceTag.properties.region
+                    SystemService = $serviceTag.properties.systemService
+                    IpRange       = $range
+                    Ip            = $IP
+                    Source        = $source
                 }
             }
         }

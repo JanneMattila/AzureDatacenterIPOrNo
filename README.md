@@ -22,9 +22,11 @@ Then you can use it for verifying the possible Azure IP address:
 
 Updating cache...
 
-Ip             Region    IpRange           Source
---             ------    -------           ------
-13.104.157.130 westindia 13.104.157.128/25 ServiceTags_Public_20210125
+IpRange       : 13.104.157.128/25
+Source        : ServiceTags_Public_20230515
+Ip            : 13.104.157.130
+Region        : westindia
+SystemService : 
 
 # Make another request
 > Get-AzureDatacenterIPOrNo -IP 13.107.246.10
@@ -36,7 +38,9 @@ Not Public Azure IP 13.107.246.10
 # Check IPv6 address
 > Get-AzureDatacenterIPOrNo -IP "2603:1040:0800:0000:0000:0000:0000:0001"
 
-Region    Ip                                      IpRange            Source
-------    --                                      -------            ------
-westindia 2603:1040:0800:0000:0000:0000:0000:0001 2603:1040:800::/46 ServiceTags_Public_20210125
+IpRange       : 2603:1040:800::/46
+Source        : ServiceTags_Public_20230515
+Ip            : 2603:1040:0800:0000:0000:0000:0000:0001
+Region        : westindia
+SystemService : 
 ```
