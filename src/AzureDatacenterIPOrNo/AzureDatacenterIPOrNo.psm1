@@ -66,19 +66,26 @@ function Get-AzureDatacenterIPOrNo
 
     $json = Get-Content $cacheFileName | ConvertFrom-Json
     $source = Get-Content $cacheSource
+
+    $ipAddressMatches = New-Object System.Collections.ArrayList
     foreach ($serviceTag in $json.values) {
         foreach ($range in $serviceTag.properties.addressPrefixes) {
             $ipNetwork = [System.Net.IPNetwork]::Parse($range)
             if ($ipNetwork.Contains($ipAddress)) {
-                return new-object psobject -property @{
+                $match = new-object psobject -property @{
                     Region        = $serviceTag.properties.region
                     SystemService = $serviceTag.properties.systemService
                     IpRange       = $range
                     Ip            = $IP
                     Source        = $source
                 }
+                $ipAddressMatches.Add($match)
             }
         }
+    }
+
+    if ($ipAddressMatches.Count -gt 0) {
+        return $ipAddressMatches
     }
 
     return new-object psobject -property @{
