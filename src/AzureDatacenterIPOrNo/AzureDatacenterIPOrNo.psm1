@@ -79,7 +79,7 @@ function Get-AzureDatacenterIPOrNo
                     Ip            = $IP
                     Source        = $source
                 }
-                $ipAddressMatches.Add($match)
+                $ipAddressMatches.Add($match) | Out-Null
             }
         }
     }
